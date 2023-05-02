@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"context"
+
 	//"errors"
 	"go/build"
 	"html/template"
@@ -157,7 +158,7 @@ func (go101 *Go101) RenderArticlePage(w http.ResponseWriter, r *http.Request, gr
 
 	if len(page) == 0 { // blank page means page not found.
 		log.Printf("article page %s/%s is not found", group, file)
-		//w.Header().Set("Cache-Control", "no-cache, private, max-age=0")
+		// w.Header().Set("Cache-Control", "no-cache, private, max-age=0")
 		http.Redirect(w, r, "/", http.StatusNotFound)
 		return
 	}
@@ -170,8 +171,10 @@ func (go101 *Go101) RenderArticlePage(w http.ResponseWriter, r *http.Request, gr
 	w.Write(page)
 }
 
-var H1, _H1 = []byte("<h1>"), []byte("</h1>")
-var H2, _H2 = []byte("<h2>"), []byte("</h2>")
+var (
+	H1, _H1 = []byte("<h1>"), []byte("</h1>")
+	H2, _H2 = []byte("<h2>"), []byte("</h2>")
+)
 
 const MaxTitleLen = 256
 
@@ -207,7 +210,7 @@ func retrieveArticleContent(group, file string) (Article, error) {
 		titleStart, contentStart = splitTitleContent(H2, _H2)
 	}
 	if titleStart < 0 {
-		//log.Println("retrieveTitlesForArticle failed:", group, file)
+		// log.Println("retrieveTitlesForArticle failed:", group, file)
 	} else {
 		article.Title = article.Content[titleStart:contentStart]
 		article.Content = article.Content[contentStart:]
@@ -237,16 +240,16 @@ func retrieveIndexContent(group string) template.HTML {
 	start := []byte("<!-- index starts (don't remove) -->")
 	i := bytes.Index(content, start)
 	if i < 0 {
-		//panic("index not found")
-		//log.Printf("index not found in %s/101/html", group)
+		// panic("index not found")
+		// log.Printf("index not found in %s/101/html", group)
 		return ""
 	}
 	content = content[i+len(start):]
 	end := []byte("<!-- index ends (don't remove) -->")
 	i = bytes.Index(content, end)
 	if i < 0 {
-		//panic("index not found")
-		//log.Printf("index not found in %s/101/html", group)
+		// panic("index not found")
+		// log.Printf("index not found in %s/101/html", group)
 		return ""
 	}
 	content = content[:i]
@@ -278,8 +281,8 @@ func disableArticleLink(htmlContent template.HTML, page string) (r template.HTML
 		i = bytes.Index(content[len(aStart):], aEnd)
 		if i >= 0 {
 			i += len(aStart)
-			//filleBytes(content[:len(start)], 0)
-			//filleBytes(content[i:i+len(end)], 0)
+			// filleBytes(content[:len(start)], 0)
+			// filleBytes(content[i:i+len(end)], 0)
 			k := bytes.Index(content, aHref)
 			if i >= 0 {
 				content[1] = 'b'
@@ -304,9 +307,11 @@ const (
 	NumPageTemplates
 )
 
-var pageTemplates [NumPageTemplates + 1]*template.Template
-var pageTemplatesMutex sync.Mutex //
-var pageTemplatesCommonPaths = []string{"web", "templates"}
+var (
+	pageTemplates            [NumPageTemplates + 1]*template.Template
+	pageTemplatesMutex       sync.Mutex //
+	pageTemplatesCommonPaths = []string{"web", "templates"}
+)
 
 func init() {
 	for i := range pageTemplates {

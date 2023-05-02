@@ -11,13 +11,15 @@ import (
 	"time"
 )
 
-var portFlag = flag.String("port", "55555", "server port")
-var genFlag = flag.Bool("gen", false, "HTML generation mode?")
-var themeFlag = flag.String("theme", "", "theme (auto | dark | light)")
-var nobFlag = flag.Bool("nob", false, "not open browswer?")
+var (
+	portFlag  = flag.String("port", "55555", "server port")
+	genFlag   = flag.Bool("gen", false, "HTML generation mode?")
+	themeFlag = flag.String("theme", "", "theme (auto | dark | light)")
+	nobFlag   = flag.Bool("nob", false, "not open browswer?")
+)
 
 func main() {
-	log.SetFlags(0)
+	log.SetFlags(-1)
 	flag.Parse()
 
 	port, isAppEngine := *portFlag, false
@@ -33,9 +35,9 @@ func main() {
 Retry:
 	l, err := net.ListenTCP("tcp", addr)
 	if err != nil {
-		if strings.Index(err.Error(), "bind: address already in use") >= 0 {
+		if strings.Contains(err.Error(), "bind: address already in use") {
 			addr.Port++
-			if addr.Port < 65535 {
+			if addr.Port < 65536 {
 				goto Retry
 			}
 		}
