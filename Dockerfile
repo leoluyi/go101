@@ -14,7 +14,7 @@ FROM build_base AS builder
 COPY . .
 ENV GOOS=linux
 ENV GOARCH=amd64
-RUN go build -o main -ldflags '-w -extldflags "-static"' .
+RUN go build -o main -ldflags '-w -extldflags "-static -fpic"' .
 
 # === Target image ===
 FROM gcr.io/distroless/base
